@@ -1,0 +1,44 @@
+services:
+  api:
+    build: ./php-fpm
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ../:/var/www/html
+    depends_on:
+      - db
+    links:
+      - db
+      - redis
+
+  db:
+    image: mysql:latest
+    ports:
+      - "3307:3306"
+    volumes:
+      - /tmp/laravel-api/db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    command:
+      'mysqld --innodb-flush-method=fsync'
+
+  web:
+    build: ./nginx
+    ports:
+      - 8000:80
+    volumes:
+      - ../:/var/www/html
+    depends_on:
+      - api
+    links:
+      - api
+  redis:
+    image: redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis}
+    ports:
+      - "6379:6379"
+
+volumes:
+  db-data:

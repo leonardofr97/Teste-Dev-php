@@ -1,71 +1,47 @@
-  # **Teste para Desenvolvedor: API de Cadastro de Clientes com Validação de CEP**
+# API de Clientes
 
-O objetivo deste teste é desenvolver uma **API Rest** para o cadastro de clientes, garantindo que o cliente esteja em um CEP valido.
+## Requisitos
+Esse projeto utiliza [docker v27.4.x](https://docs.docker.com/) e [docker compose](https://docs.docker.com/compose/), certifique-se de que está utilizando a [versão mais recente](https://docs.docker.com/install).
 
----
+## Configurando o seu ambiente.
 
-## **Descrição do Projeto**
+Depois de ter instalado e configurado o docker compose, siga os passos abaixo no seu terminal:
 
-### **Backend (API Laravel)**
+1. `git clone https://github.com/leonardofr97/Teste-Dev-php`
+2. `cd customer-api`
+3. `cd docker`
+4. `docker compose up -d`
 
-#### **Cadastro de Clientes**
-- Criar um cliente com as seguintes informações:
-  - Nome completo
-  - CPF (validado, único no banco)
-  - E-mail (validado, único no banco)
-  - Telefone
-  - CEP 
-  - Endereço (logradouro, bairro, cidade, estado)
+## Configurando o projeto
 
-- Editar um cliente
-- Excluir um cliente
-- Listar clientes (paginação, filtro por nome, CPF e CEP)
+Depois de ter configurado o seu ambiente, nós vamos configurar o projeto, siga os passos abaixo:
 
----
+1. `docker compose exec --user=php-user api bash`
+2. `cp .env.example .env`
+3. `composer install`
+4. `php artisan key:generate`
+5. `php artisan migrate`
+6. `php artisan db:seed` *(esse passo não é obrigatório)*
 
-### **Migrations**
-- Utilize migrations do Laravel para definir a estrutura do banco de dados, garantindo uma boa organização e facilidade de manutenção.
+## Endpoints
+Disponibilizei uma `collection` do Postman em `/docs`.
 
----
+`GET` /customers
+  - filters[document][eq]=06757467724 -- CPFs iguais (eq) ao valor indicado.
+  - filters[name][inc]=ANTONIETA -- Nomes que incluem (inc) a string indicada.
+  - filters[zip_code][eq]=909471601 -- CEPs iguais (eq) ao valor indicado.
+  - per_page=5
+  - page=1
 
-### **Requisitos**
-- **Validar CPF** (formato correto e não permitir duplicação).
-- **Validar e-mail** (formato correto e não permitir duplicação).
-- **Validar endereço automaticamente** via [BrasilAPI](https://brasilapi.com.br/docs#tag/CEP-V2) ou qualquer outro endpoint público ao inserir ou atualizar um cliente.
+`POST` /customers
 
+`PATCH` /customers
 
----
+`DELETE` /customers
 
-## **Critérios de Avaliação**
-- **Adesão aos requisitos funcionais e técnicos**
-- **Qualidade do código** (organização, padrões, segurança)
-- **Uso adequado do Laravel (migrations, Eloquent, validações, etc.)**
-- **README bem estruturado** com instruções de instalação e uso
-
----
-
-## **Tecnologias a serem utilizadas**
-- **PHP 8.x**
-- **Laravel 10.x**
-- **Banco de Dados**: MySQL ou PostgreSQL
-
----
-
-## **Extra**
-- Implementação do **Repository Pattern**  
-- **Testes automatizados** (unitários ou de integração)  
-- **Dockerização** do ambiente para facilitar a instalação  
-- **Implementação de cache** para otimizar o desempenho 
-
----
-
-## **Entrega**
-1. Faça um **fork** deste repositório.
-2. Crie uma **branch** com o seu nome.
-3. Altere o **README.md** com as instruções para rodar o projeto (comandos necessários, migrations, seeds, etc.).
-4. Após finalizar, envie um **pull request** para avaliação.
-
----
-
-
-Boa sorte! 🚀
+## Melhorias
+- [x]  Armazenar dados do endereço em cache em memória;
+- [ ]  Armazenar dados de endereço a partir do CEP direto no banco de dados e utilizar cache físico;
+- [ ]  Adicionar soft-delete e rotina para remoção automática dos dados baseado em tempo pré-definido;
+- [ ]  Testes unitários/integração.
+- [ ]  Adicionar autenticação.
